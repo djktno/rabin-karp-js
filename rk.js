@@ -1,6 +1,6 @@
 var matcher = function(text, pattern, cb) {
-  var radix = 10;
-  var prime = 11;
+  var radix = 32;
+  var prime = 33554393;
 
   var text_length = text.length;
   var pattern_length = pattern.length;
@@ -34,10 +34,8 @@ var matcher = function(text, pattern, cb) {
   }
 
   for (var s = pattern_length; s < text_length; s++) {
-    var p2 = mod(text[s-pattern_length] * h, prime);
-    t = mod(t - p2, prime);
-    t = mod(t * radix, prime);
-    t = mod(t + text[s-1], prime);
+    t = mod(t + radix * prime - text[s-pattern_length] * h, prime);
+    t = mod(t * radix + text[s], prime);
 
     if (p == t){
       if (pattern.join('') + ":" + text.slice(s, s+pattern_length).join('')) {
@@ -51,7 +49,7 @@ var hit_callback = function() {
   console.log("In callback, matched.");
 };
 
-var text = [3,1,4,1,5,9,2,6,5,3,2,6,9,7,9,3];
-var pattern = [2,6];
+var text = [3,1,4,1,5,9,2,6,5,3,2,6,9,7,9,3,2,6];
+var pattern = [2,6,5];
 
 matcher(text, pattern, hit_callback);
